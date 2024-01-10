@@ -20,7 +20,7 @@ explore_lot_klaraw <-function (pre, post) {
   dplyr::summarise(pre.wafer.summary,mean = mean(ThK), sigma3 = 3*sd(ThK))
   dplyr::mutate(pre.wafer.summary,split="pre")
 
-  pre.plot<- ggplot(pre.wafer.all,aes(x=slot,y=ThK)) + geom_boxplot() +ylab("Thickness(A)") +ggtitle("Pre measurement")
+  pre.plot<- plotly::ggplotly((pre.wafer.all,aes(x=slot,y=ThK)) + geom_boxplot() +ylab("Thickness(A)") +ggtitle("Pre measurement"))
 
   post.wafer <-read_kla_f5(post)
   #combine for box plot
@@ -33,14 +33,15 @@ explore_lot_klaraw <-function (pre, post) {
   dplyr::summarise(post.wafer.summary,mean = mean(ThK), sigma3 = 3*sd(ThK))
   dplyr::mutate(post.wafer.summary,split="pre")
 
-  post.plot<- ggplot(post.wafer.all,aes(x=slot,y=ThK)) + geom_boxplot() + ylab("Thickness(A)") + ggtitle("Post Measurement")
+  post.plot<- plotly::ggplotly(ggplot(post.wafer.all,aes(x=slot,y=ThK)) + geom_boxplot() + ylab("Thickness(A)") + ggtitle("Post Measurement"))
+
 
 #delta
   delta.wafer.all <- dplyr::left_join(pre.wafer.all, post.wafer.all, by=c("X"="X","Y"="Y","slot"="slot"))
 
   delta.wafer.all$ThK <- delta.wafer.all$ThK.y - delta.wafer.all$ThK.x
 #delta map plots
-  delta.plot<- ggplot(delta.wafer.all,aes(x=slot,y=ThK)) + geom_boxplot() +ylab("Thickness(A)") +ggtitle("Delta measurement")
+  delta.plot<- plotly::ggplotly(ggplot(delta.wafer.all,aes(x=slot,y=ThK)) + geom_boxplot() +ylab("Thickness(A)") +ggtitle("Delta measurement"))
 #delta summary
   delta.wafer.summary <- dplyr::group_by(delta.wafer.all,slot)
   delta.table <-dplyr::summarise(delta.wafer.summary,mean = mean(ThK), perc_3sigma = 3*sd(ThK)/mean*100,perc_range=(max(ThK)-min(ThK))/mean(ThK)*100)
